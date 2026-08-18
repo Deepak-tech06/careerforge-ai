@@ -1,0 +1,55 @@
+generator client {
+  provider     = "prisma-client-js"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  resumes   Resume[]
+}
+
+model SystemSettings {
+  id    String @id @default("global")
+  theme String @default("DEFAULT")
+}
+
+model Resume {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName     String
+  rawText      String     @db.Text
+  parsedSkills String[]
+  uploadedAt   DateTime   @default(now())
+  analyses     Analysis[]
+}
+
+model Analysis {
+  id              String   @id @default(cuid())
+  resumeId        String
+  resume          Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  targetRole      String
+  readinessScore  Float
+  extractedSkills String[]
+  skillGaps       String[]
+  matchedSkills   String[]
+  createdAt       DateTime @default(now())
+  roadmap         Roadmap?
+}
+
+model Roadmap {
+  id         String   @id @default(cuid())
+  analysisId String   @unique
+  analysis   Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  steps      Json
+  createdAt  DateTime @default(now())
+}

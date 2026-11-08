@@ -27,6 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.push("/auth");
     } else {
       const u = getUser();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(u);
       setIsAdmin(u?.role === 'ADMIN');
     }

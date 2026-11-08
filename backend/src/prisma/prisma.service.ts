@@ -17,9 +17,7 @@ export class PrismaService
   }
   constructor() {
     const pool = new Pool({
-      connectionString:
-        process.env.DATABASE_URL ||
-        'postgresql://postgres:deepak123@localhost:5432/careerforge',
+      connectionString: process.env.DATABASE_URL,
     });
     const adapter = new PrismaPg(pool);
 

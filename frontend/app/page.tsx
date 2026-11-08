@@ -67,13 +67,14 @@ export default function HomePage() {
   useEffect(() => {
     // Read auth state from localStorage on the client after hydration
     const token = localStorage.getItem('cf_token');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsAuthenticated(!!token);
     try {
       const userStr = localStorage.getItem('cf_user');
       if (userStr) {
         const user = JSON.parse(userStr);
         setUserName(user?.name ?? "");
-        setIsLocalAdmin(user?.role === 'ADMIN' || user?.email?.toLowerCase() === 'admin@gmail.com');
+        setIsLocalAdmin(user?.role === 'ADMIN');
       }
     } catch {
       // ignore parse errors

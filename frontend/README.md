@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CareerForge AI — Frontend
 
-## Getting Started
+The Next.js frontend for CareerForge AI — a multi-page application providing the user interface for resume upload, career analysis, skill gap review, and learning roadmap navigation.
 
-First, run the development server:
+---
+
+## Technology
+
+- **Next.js 16** (App Router)
+- **React 19** + **TypeScript**
+- **Tailwind CSS v4**
+- **Axios** — REST API client with JWT interceptors
+- **Recharts** — data visualisation charts
+- **React Dropzone** — drag-and-drop file upload
+- **Inter** font (Google Fonts)
+
+---
+
+## Pages
+
+| Route | Description |
+|---|---|
+| `/` | Landing page — features, how it works, stats |
+| `/auth` | Login and registration |
+| `/dashboard` | Overview — readiness score, matched/missing skills |
+| `/dashboard/upload` | PDF resume upload and role selection |
+| `/dashboard/analysis` | Detailed analysis results |
+| `/dashboard/roadmap` | Step-by-step learning roadmap |
+| `/dashboard/jobs` | Job role match overview |
+| `/dashboard/interview` | Interview preparation questions |
+
+---
+
+## Installation
+
+```bash
+cd frontend
+npm install
+```
+
+---
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+| Variable | Default | Description |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:3001/api` | Backend API base URL |
+
+---
+
+## Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Opens at [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Production Build
 
-## Learn More
+```bash
+npm run build
+npm run start
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Lint
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run lint
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Important Configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **`next.config.ts`** — Next.js configuration
+- **`postcss.config.mjs`** — PostCSS / Tailwind CSS v4 setup
+- **`tsconfig.json`** — TypeScript configuration
+- **`app/globals.css`** — global CSS variables and theme definitions
+
+### Authentication
+
+JWT tokens are stored in `localStorage` under keys `cf_token` and `cf_user`.
+- `lib/api.ts` — Axios instance that automatically attaches the `Authorization: Bearer` header and handles 401 responses by clearing local auth state and redirecting to `/auth`
+- `lib/auth.ts` — helpers for reading/writing auth state in `localStorage`
+
+### Themes
+
+`components/ThemeProvider.tsx` provides a global theme context. Theme switching is available to admin users only (role assigned server-side).
+
+---
+
+## Docker
+
+Built and served via the root `docker-compose.yml`. See the [root README](../README.md) for Docker setup instructions.

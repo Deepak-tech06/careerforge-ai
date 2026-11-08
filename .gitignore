@@ -1,26 +1,56 @@
-# Dependencies
-node_modules/
-venv/
-__pycache__/
-
-# Build outputs
-dist/
-.next/
-.vercel/
-
-# Environment files
+# ─── Environment files ─────────────────────────────────────────────────────
+# Never commit real secrets
 .env
 .env.local
+.env.development
+.env.production
+.env.test
 .env.*.local
 
-# IDE
+# Allow example files to be committed and reviewed
+!.env.example
+
+# ─── Dependencies ──────────────────────────────────────────────────────────
+node_modules/
+venv/
+
+# ─── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# ─── Build outputs ─────────────────────────────────────────────────────────
+dist/
+build/
+.next/
+.vercel/
+out/
+coverage/
+
+# ─── TypeScript ────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Logs ──────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ─── IDE ───────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# OS files
+# ─── OS ────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-npm-debug.log*
+
+# Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+.github/instructions/

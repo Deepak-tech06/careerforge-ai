@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { getUser, clearAuth, isAuthenticated } from "../../lib/auth";
-import { useTheme, THEMES } from "../../components/ThemeProvider";
+import { useTheme, THEMES, ThemeType } from "../../components/ThemeProvider";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: "🏠" },
@@ -28,9 +28,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     } else {
       const u = getUser();
       setUser(u);
-      setIsAdmin(u?.role === "ADMIN" || u?.email?.toLowerCase() === "admin@gmail.com");
+      setIsAdmin(u?.role === 'ADMIN');
     }
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleLogout = () => {
     clearAuth();
@@ -75,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </label>
               <select
                 value={theme}
-                onChange={(e) => setTheme(e.target.value as any)}
+                onChange={(e) => setTheme(e.target.value as ThemeType)}
                 className="theme-select"
                 style={{ width: "100%" }}
               >

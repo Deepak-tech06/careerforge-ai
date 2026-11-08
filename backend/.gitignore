@@ -1,6 +1,24 @@
+# ─── Dependencies ──────────────────────────────────────────────────────────
 node_modules/
+
+# ─── Build ─────────────────────────────────────────────────────────────────
 dist/
+coverage/
+*.tsbuildinfo
+
+# ─── Environment files ─────────────────────────────────────────────────────
 .env
 .env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+!.env.example
+
+# ─── Generated ─────────────────────────────────────────────────────────────
 src/generated/
+
+# ─── Logs ──────────────────────────────────────────────────────────────────
 *.log
+npm-debug.log*
+yarn-debug.log*

@@ -51,7 +51,11 @@ export default function InterviewPage() {
   const toggleHint = (i: number) => {
     setShowHint((prev) => {
       const s = new Set(prev);
-      s.has(i) ? s.delete(i) : s.add(i);
+      if (s.has(i)) {
+        s.delete(i);
+      } else {
+        s.add(i);
+      }
       return s;
     });
   };

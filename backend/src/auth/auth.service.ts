@@ -22,8 +22,11 @@ export class AuthService {
     if (existing) throw new ConflictException('Email already registered');
 
     const hash = await bcrypt.hash(dto.password, 10);
+    const adminEmail = process.env.ADMIN_EMAIL;
     const role =
-      dto.email.toLowerCase() === 'admin@gmail.com' ? 'ADMIN' : 'USER';
+      adminEmail && dto.email.toLowerCase() === adminEmail.toLowerCase()
+        ? 'ADMIN'
+        : 'USER';
     const user = await this.prisma.user.create({
       data: { name: dto.name, email: dto.email, password: hash, role },
     });

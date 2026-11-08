@@ -3,7 +3,7 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import api from "../lib/api";
 
-type ThemeType = "DEFAULT" | "EMERALD" | "CYBERPUNK" | "XSTAR" | "LUXURY" | "DAYLIGHT" | "SUNSET" | "MINT" | "HOSTIM" | "NEBULA";
+export type ThemeType = "DEFAULT" | "EMERALD" | "CYBERPUNK" | "XSTAR" | "LUXURY" | "DAYLIGHT" | "SUNSET" | "MINT" | "HOSTIM" | "NEBULA";
 
 export const THEMES: Record<ThemeType, Record<string, string>> = {
   DEFAULT: {
@@ -189,7 +189,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       const userStr = localStorage.getItem("cf_user");
       if (userStr) {
         const user = JSON.parse(userStr);
-        setIsAdmin(user.role === "ADMIN" || user.email?.toLowerCase() === "admin@gmail.com");
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsAdmin(user.role === 'ADMIN');
       }
     } catch {
       // ignore

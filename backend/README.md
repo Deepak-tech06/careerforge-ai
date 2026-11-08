@@ -1,98 +1,181 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# CareerForge AI — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The NestJS REST API server for CareerForge AI. Handles authentication, PDF resume processing, career analysis orchestration, and persistent storage via Prisma and PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Technology
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **NestJS 11** — modular Node.js framework
+- **TypeScript**
+- **Prisma 7** — ORM and migration toolkit
+- **PostgreSQL 15** — relational database
+- **passport-jwt** + **bcryptjs** — JWT authentication and password hashing
+- **pdf-parse** — PDF text extraction
+- **multer** — multipart form-data file upload
+- **class-validator** + **class-transformer** — DTO validation
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## Modules
 
-## Compile and run the project
+| Module | Responsibility |
+|---|---|
+| `AuthModule` | Registration, login, JWT signing, Passport strategy |
+| `ResumeModule` | PDF upload, text extraction, skill keyword extraction |
+| `AnalysisModule` | Career analysis, AI service communication, fallback, roadmap |
+| `PrismaModule` | Database connection and service |
+
+---
+
+## Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cd backend
+npm install
 ```
 
-## Run tests
+---
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | ✅ | PostgreSQL connection string |
+| `DIRECT_URL` | ✅ | Direct connection for Prisma migrations |
+| `JWT_SECRET` | ✅ | JWT signing secret (min 64 characters) |
+| `PORT` | Optional | Server port (default: `3001`) |
+| `AI_SERVICE_URL` | Optional | AI service URL (default: `http://localhost:8000`) |
+| `FRONTEND_URL` | Optional | Frontend URL for CORS (default: `http://localhost:3000`) |
+| `ADMIN_EMAIL` | Optional | Email that receives ADMIN role on registration |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+**Generate secure values:**
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"  # DB password
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"  # JWT secret
+```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
+
+## Database Setup
+
+### Prerequisites
+- PostgreSQL 15 running locally (or via Docker)
+- `DATABASE_URL` set in `backend/.env`
+
+### Create the database (if it doesn't exist)
+```bash
+psql -U postgres -c "CREATE DATABASE careerforge;"
+```
+
+### Run migrations
+```bash
+# Development (creates migration files if schema changed)
+npx prisma migrate dev
+
+# Production / CI (applies existing migrations only)
+npx prisma migrate deploy
+```
+
+### Generate Prisma client
+```bash
+npx prisma generate
+```
+
+### Inspect the database (optional)
+```bash
+npx prisma studio
+```
+
+---
+
+## Database Schema
+
+Four models with the following relationships:
+
+```
+User (1) ──► (many) Resume (1) ──► (many) Analysis (1) ──► (one) Roadmap
+```
+
+| Model | Key Fields |
+|---|---|
+| `User` | `id`, `name`, `email` (unique), `password` (bcrypt), `role` |
+| `Resume` | `id`, `userId`, `fileName`, `rawText`, `parsedSkills[]` |
+| `Analysis` | `id`, `resumeId`, `targetRole`, `readinessScore`, `matchedSkills[]`, `skillGaps[]` |
+| `Roadmap` | `id`, `analysisId`, `steps` (JSON) |
+
+---
+
+## Development
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+API available at [http://localhost:3001/api](http://localhost:3001/api)
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## Production Build
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run build
+npm run start:prod
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## API Routes
 
-## Stay in touch
+All routes are prefixed with `/api`. Protected routes require `Authorization: Bearer <token>`.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Auth
 
-## License
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Register new user |
+| `POST` | `/api/auth/login` | Public | Login, returns JWT |
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### Resume
+
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/resume/upload` | JWT | Upload PDF (multipart `file` field) |
+| `GET` | `/api/resume/my` | JWT | Get current user's resumes |
+| `GET` | `/api/resume/:id` | JWT | Get specific resume |
+
+### Analysis
+
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/analysis` | JWT | Run analysis (`resumeId`, `targetRole`) |
+| `GET` | `/api/analysis/my` | JWT | Get current user's analyses |
+| `GET` | `/api/analysis/roles` | JWT | Get available target roles |
+| `GET` | `/api/analysis/:id` | JWT | Get specific analysis |
+
+---
+
+## Testing
+
+```bash
+# Unit tests
+npm test
+
+# Unit tests with coverage
+npm run test:cov
+
+# End-to-end tests
+npm run test:e2e
+```
+
+---
+
+## Docker
+
+Built and served via the root `docker-compose.yml`. Migrations run automatically on container start. See the [root README](../README.md) for full setup instructions.

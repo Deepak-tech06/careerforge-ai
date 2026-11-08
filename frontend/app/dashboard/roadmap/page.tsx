@@ -29,7 +29,6 @@ interface AnalysisWithRoadmap {
 }
 
 const PRIORITY_COLOR = { high: "#f87171", medium: "#fbbf24", low: "#60a5fa" };
-const PRIORITY_BG = { high: "rgba(248,113,113,0.12)", medium: "rgba(251,191,36,0.12)", low: "rgba(96,165,250,0.12)" };
 
 export default function RoadmapPage() {
   const [analysis, setAnalysis] = useState<AnalysisWithRoadmap | null>(null);

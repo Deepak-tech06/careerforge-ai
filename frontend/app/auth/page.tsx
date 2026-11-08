@@ -22,7 +22,8 @@ export default function AuthPage() {
     if (localStorage.getItem('cf_token')) {
       router.push('/dashboard');
     }
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async () => {
     setError("");

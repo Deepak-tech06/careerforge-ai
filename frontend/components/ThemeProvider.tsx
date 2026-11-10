@@ -210,12 +210,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Fetch theme from backend
-    api.get("/settings/theme").then(({ data }) => {
-      if (THEMES[data.theme as ThemeType]) {
-        applyTheme(data.theme as ThemeType);
-      }
-    }).catch(() => {});
+    // Immediately apply default theme on mount
+    applyTheme("HOSTIM");
+
+    // Fetch persisted theme from backend
+    api
+      .get("/settings/theme")
+      .then(({ data }) => {
+        if (THEMES[data.theme as ThemeType]) {
+          applyTheme(data.theme as ThemeType);
+        }
+      })
+      .catch(() => {
+        // Retain HOSTIM as fallback if request fails
+      });
   }, []);
 
   const setTheme = async (t: ThemeType) => {
